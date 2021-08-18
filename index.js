@@ -60,7 +60,7 @@ let clientSearch = ["web", "job"]
 //   }
 // }
 
-let searchData = {}
+let searchData;
 const getsearchResult = (input) => {
   T.get('search/tweets', { q: input, count: 2 },function(err, data, response) {
     searchData = data;
@@ -82,7 +82,7 @@ app.get('/', async(req, res) => {
 
 app.post('/search', (req, res) => {
   console.log(req.body);
-  clientSearch = req.body.input
+  clientSearch = req.body.inputValue
   console.log(clientSearch)
   getsearchResult(clientSearch)
 })
