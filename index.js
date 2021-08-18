@@ -21,39 +21,58 @@ const T = new Twit({
 });
 
 let tweetData;
-
-const searchEvent = () => {
+// 変更前
+// const searchEvent = () => {
   
-  T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, function (err, data, response) {
+//   T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, function (err, data, response) {
+//     tweetData = data;
+//     // console.log(tweetData)
+//     console.log("test", data.statuses[0].created_at);
+//   })
+// }
+const searchEvent = async() => {
+  
+  T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, await function (err, data, response) {
     tweetData = data;
     // console.log(tweetData)
-    console.log("test", data.statuses[0].created_at);
+    // console.log("test", data.statuses[0].created_at);
   })
+  return tweetData
 }
 
 let clientSearch = ["web", "job"]
 
-const searchUserInput = (input) => {
-  try {
+// const searchUserInput = (input) => {
+//   try {
     
-    console.log("check", input);
-    T.get('search/tweets', { q: input, count: 2 }).then(function (data) {
-      console.log(data.data);
-      // resultData = {...data}
-      // tempRes = {...data}
-      // return data
-      // console.log(data);
-      // console.log('result', resultData);
-    }).then(res => console.log("RES", res))
-    // return resData
-  } catch (error) {
-    console.log(error);
-  }
+//     console.log("check", input);
+//     T.get('search/tweets', { q: input, count: 2 }).then(function (data) {
+//       console.log(data.data);
+//       // resultData = {...data}
+//       // tempRes = {...data}
+//       // return data
+//       // console.log(data);
+//       // console.log('result', resultData);
+//     }).then(res => console.log("RES", res))
+//     // return resData
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+let searchData = {}
+const getsearchResult = (input) => {
+  T.get('search/tweets', { q: input, count: 2 },function(err, data, response) {
+    searchData = data;
+  })
+  return searchData
 }
 
-app.get('/', (req, res) => {
-  console.log("HI: ",  searchUserInput(clientSearch));
-  const resultData =  searchUserInput(clientSearch);
+
+
+app.get('/', async(req, res) => {
+  console.log("HI: ",  getsearchResult(clientSearch));
+  const resultData =  await getsearchResult(clientSearch);
   // resultData()
   // res.json(tweetData)
   console.log("resultData: ", resultData);
@@ -65,12 +84,19 @@ app.post('/search', (req, res) => {
   console.log(req.body);
   clientSearch = req.body.input
   console.log(clientSearch)
-  searchUserInput(clientSearch)
+  getsearchResult(clientSearch)
 })
 
-app.get('/update', (req, res) => {
-  searchEvent();
-  res.json(tweetData)
+// app.get('/update', async(req, res) => {
+//   await searchEvent()
+//   console.log("TEST WEB TWEET:" , tweetData)
+//   res.json(tweetData)
+// })
+
+app.get('/update', async(req, res) => {
+  const webJpbData = await searchEvent()
+  console.log("TEST WEB TWEET:" , webJpbData)
+  res.json(webJpbData)
 })
 const PORT = process.env.PORT || 8000
 
