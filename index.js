@@ -32,12 +32,15 @@ let tweetData;
 // }
 const searchEvent = async() => {
   
-  T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, await function (err, data, response) {
-    tweetData = data;
+  // T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, await function (err, data, response) {
+    return T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}).then((response) => {
+      return response.data
+    }).catch((err) => console.log(err))
+    // tweetData = data;
     // console.log(tweetData)
     // console.log("test", data.statuses[0].created_at);
-  })
-  return tweetData
+  
+  // return tweetData
 }
 
 let clientSearch = ["web", "job"]
@@ -62,20 +65,25 @@ let clientSearch = ["web", "job"]
 
 let searchData;
 const getsearchResult = (input) => {
-  T.get('search/tweets', { q: input, count: 2 },function(err, data, response) {
-    searchData = data;
-  })
-  return searchData
+  // return T.get('search/tweets', { q: input, count: 2 },function(err, data, response) {
+  //   searchData = data; 
+  //   return data
+  // })
+  // return searchData
+  return T.get('search/tweets', { q: input, count: 2, skip_status: true }).then((response) => {
+    console.log(response.data);
+    return response.data
+  }).catch((err) => console.error(err))
+  // return searchData
 }
 
 
 
 app.get('/', async(req, res) => {
-  console.log("HI: ",  getsearchResult(clientSearch));
+  // console.log("HI: ",  getsearchResult(clientSearch));
   const resultData =  await getsearchResult(clientSearch);
   // resultData()
   // res.json(tweetData)
-  console.log("resultData: ", resultData);
   res.json(resultData)
   // console.log(tweetData)
 })
