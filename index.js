@@ -1,11 +1,10 @@
-const Twitter = require('twitter');
 require('dotenv').config()
 const express = require("express");
 const app = express()
-const needle = require('needle');
 const cors = require("cors");
 var Twit = require('twit');
 const { json } = require('express');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
@@ -20,30 +19,50 @@ const T = new Twit({
   strictSSL: true,
 });
 
-let tweetData;
-// 変更前
-// const searchEvent = () => {
-  
-//   T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, function (err, data, response) {
-//     tweetData = data;
-//     // console.log(tweetData)
-//     console.log("test", data.statuses[0].created_at);
-//   })
-// }
+// let tweetData;
+
 const searchEvent = async() => {
   
-  // T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}, await function (err, data, response) {
-    return T.get('search/tweets', { q: ['web', 'job'], count: 5, language: 'en'}).then((response) => {
+    return T.get('search/tweets', { q: 'web job' , count: 20, language: 'en'}).then((response) => {
       return response.data
     }).catch((err) => console.log(err))
-    // tweetData = data;
-    // console.log(tweetData)
-    // console.log("test", data.statuses[0].created_at);
-  
   // return tweetData
 }
 
-let clientSearch = ["web", "job"]
+let clientSearch = "web job"
+
+const getsearchResult = (input) => {
+  
+  return T.get('search/tweets', { q: input, count: 10, language: 'en', skip_status: true }).then((response) => {
+    // console.log(response.data);
+    return response.data
+  }).catch((err) => console.error(err))
+}
+
+
+app.get('/', async(req, res) => {
+  // console.log("HI: ",  getsearchResult(clientSearch));
+  const resultData =  await getsearchResult(clientSearch);
+  res.json(resultData)
+  
+})
+
+app.post('/search', (req, res) => {
+  console.log(req.body);
+  clientSearch = req.body.inputValue
+  console.log(clientSearch)
+  getsearchResult(clientSearch)
+})
+
+app.get('/update', async(req, res) => {
+  const webJpbData = await searchEvent()
+  console.log("TEST WEB TWEET:" , webJpbData)
+  res.json(webJpbData)
+})
+const PORT = process.env.PORT || 8000
+
+app.listen(PORT, () => console.log(`The server has  started on port: ${PORT}`))
+
 
 // const searchUserInput = (input) => {
 //   try {
@@ -62,102 +81,3 @@ let clientSearch = ["web", "job"]
 //     console.log(error);
 //   }
 // }
-
-let searchData;
-const getsearchResult = (input) => {
-  // return T.get('search/tweets', { q: input, count: 2 },function(err, data, response) {
-  //   searchData = data; 
-  //   return data
-  // })
-  // return searchData
-  return T.get('search/tweets', { q: input, count: 2, skip_status: true }).then((response) => {
-    console.log(response.data);
-    return response.data
-  }).catch((err) => console.error(err))
-  // return searchData
-}
-
-
-
-app.get('/', async(req, res) => {
-  // console.log("HI: ",  getsearchResult(clientSearch));
-  const resultData =  await getsearchResult(clientSearch);
-  // resultData()
-  // res.json(tweetData)
-  res.json(resultData)
-  // console.log(tweetData)
-})
-
-app.post('/search', (req, res) => {
-  console.log(req.body);
-  clientSearch = req.body.inputValue
-  console.log(clientSearch)
-  getsearchResult(clientSearch)
-})
-
-// app.get('/update', async(req, res) => {
-//   await searchEvent()
-//   console.log("TEST WEB TWEET:" , tweetData)
-//   res.json(tweetData)
-// })
-
-app.get('/update', async(req, res) => {
-  const webJpbData = await searchEvent()
-  console.log("TEST WEB TWEET:" , webJpbData)
-  res.json(webJpbData)
-})
-const PORT = process.env.PORT || 8000
-
-app.listen(PORT, () => console.log(`The server has  started on port: ${PORT}`))
-
-// const client = new Twitter({
-  //     consumer_key: process.env.TWITTER_API_KEY,
-  //     consumer_secret: process.env.API_SECRET_KEY,
-  //     access_token_key: process.env.TWITTER_ACCESS_TOKEN,
-  //     access_token_secret: process.env.TWITTER_ACCES_TOKEN_SECRET,
-  //     bearer_token: process.env.BEARER_TOKEN
-  //   });
-  
-  
-  //   client.stream('statuses/filter', {track: 'javascript'}, function(stream) {
-    //     stream.on('data', function(event) {
-      //       console.log(event && event.text);
-      //     });
-      
-      //     stream.on('error', function(error) {
-        //       throw error;
-        //     });
-        //   });
-        
-        //   client.stream('statuses/filter', {track: 'code'},  function(stream) {
-          //     stream.on('data', function(tweet) {
-            //       console.log(tweet.text);
-            //     });
-            
-            //     stream.on('error', function(error) {
-              //       console.log(error);
-              //     });
-              //   });
-              
-              //   client.get('search/tweets', {q: 'olympic'}, function(error, tweets, response) {
-                //     console.log(tweets);
-                //     // console.log(response);
-                //  });
-                
-                //  client.stream('statuses/filter', {track: 'olympic'},  function(stream) {
-                  //     stream.on('data', function(tweet) {
-                    //       console.log(tweet.text);
-                    //     });
-                    
-                    //     stream.on('error', function(error) {
-                      //       console.log(error);
-                      //     });
-                      //   });
-
-                      // var stream = T.stream('statuses/filter', { track: ['#vancouver', '#event'], language: 'en'})
-                      
-                      // stream.on('tweet', function (tweet) {
-                        //   // tweetData = tweet; 
-                        //   // console.log(tweetData)
-                        //   console.log('stream', tweet);
-                        // })
