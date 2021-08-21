@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.all('/', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", ["http://localhost:3000","https://find-web-job-tweets.netlify.app/"]);
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next()
 });
