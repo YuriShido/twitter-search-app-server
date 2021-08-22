@@ -29,7 +29,7 @@ const T = new Twit({
 
 const searchEvent = async() => {
   
-    return T.get('search/tweets', { q: 'web job' , count: 20, language: 'en'}).then((response) => {
+    return T.get('search/tweets', { q: 'web job' , count: 100, language: 'en'}).then((response) => {
       return response.data
     }).catch((err) => console.log(err))
   // return tweetData
@@ -39,7 +39,7 @@ let clientSearch = "web job"
 
 const getsearchResult = (input) => {
   
-  return T.get('search/tweets', { q: input, count: 10, language: 'en', skip_status: true }).then((response) => {
+  return T.get('search/tweets', { q: input, count: 100, language: 'en', skip_status: true }).then((response) => {
     // console.log(response.data);
     return response.data
   }).catch((err) => console.error(err))
